@@ -2,9 +2,8 @@
   "name": "sequence-maker",
   "version": "1.0.0",
   "description": "makes a sequence of images out of a static video",
-  "main": "index.js",
+  "main": "convert.js",
   "scripts": {
-    "convert": "node index"
   },
   "author": "",
   "license": "ISC",
