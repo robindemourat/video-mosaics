@@ -16,7 +16,7 @@ A nano cli tool wrapping `fluent-ffmpeg` lib to provide a quick way to generate 
 
 # Usage
 
-If you use just ``node convert`` the script presumes your inputting a video located at relative path `./input/vid.mp4` and outputting at `./output/`.
+If you use just ``node convert`` the script presumes that you're giving it a a video located at relative path `./input/vid.mp4` and want to output resulting files at relative path `./output/`.
 
 Accepted arguments of the script :
 
