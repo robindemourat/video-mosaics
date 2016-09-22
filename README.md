@@ -3,7 +3,7 @@ Video mosaics
 
 VIDEO ==> screenshots + html mosaic + pdf mosaic
 
-A mini cli tool wrapping `fluent-ffmpeg` lib to provide a quick way to generate thumbnails out of a local video and output from it some image files, an html page, and a pdf file.
+A nano cli tool wrapping `fluent-ffmpeg` lib to provide a quick way to generate thumbnails out of a local video and output from it some image files, an html page, and a pdf file.
 
 # Installation
 
@@ -16,7 +16,9 @@ A mini cli tool wrapping `fluent-ffmpeg` lib to provide a quick way to generate 
 
 # Usage
 
-Accepted arguments :
+If you use just ``npm run convert`` the script presumes your inputting a video located at relative path `./input/vid.mp4` and outputting at `./output/`.
+
+Accepted arguments of the script :
 
 ```
 --input : relative file path of the video to process (default ./input/vid.mp4)
@@ -26,4 +28,4 @@ Accepted arguments :
 
 # Contribution
 
-Feel free to contribute and add some features to this nano-tool if you find some use in the tool.
+Feel free to contribute and add some features to this nano-tool if you find some use in it.
