@@ -12,11 +12,11 @@ A nano cli tool wrapping `fluent-ffmpeg` lib to provide a quick way to generate 
 * `cd video-mosaics` (to get to the script)
 * `npm install` (to install dependencies)
 * (put your video in the script folder, ideally in an `input` folder)
-* `npm run convert` + params (see below) to start conversion process
+* `node convert` + params (see below) to start conversion process
 
 # Usage
 
-If you use just ``npm run convert`` the script presumes your inputting a video located at relative path `./input/vid.mp4` and outputting at `./output/`.
+If you use just ``node convert`` the script presumes your inputting a video located at relative path `./input/vid.mp4` and outputting at `./output/`.
 
 Accepted arguments of the script :
 
