@@ -9,10 +9,16 @@ const pdf = require('phantom-html2pdf');
 const defaultInputFile = './input/vid.mp4';
 const defaultOutputDir = './output';
 
+/**
+ * Parse cli args-based inputParams, fill with default if needed,
+ * check that all files and folders are there
+ */
 const formatParameters = function(inputParams, callback) {
   const input = inputParams.input;
   const output = inputParams.output;
+  console.log(inputParams);
   async.waterfall([
+    // check input file
     function(inputCb){
       if (input === undefined) {
         console.log('no input specified, using ', defaultInputFile);
@@ -24,7 +30,7 @@ const formatParameters = function(inputParams, callback) {
             inputCb({error: 'no valid input'});
           }
         });
-      }else fs.exists(input, (inputExists)=>{
+      }else fs.exists(input, (defaultExists)=>{
           if (defaultExists) {
             inputCb(null, {input: input});
           } else {
@@ -33,6 +39,7 @@ const formatParameters = function(inputParams, callback) {
           }
       });
     },
+    // check output folder
     function(params, outputCb) {
       if (output === undefined) {
         console.log('no output folder specified, using ', defaultOutputDir);
@@ -67,7 +74,7 @@ const formatParameters = function(inputParams, callback) {
         })
       }
     },
-    // basic params
+    // populate screenshotting params if needed
     function(parameters, basicCb) {
       parameters.timespan = inputParams.timespan || 10;
       console.log('current timespan is ', parameters.timespan);
@@ -77,11 +84,20 @@ const formatParameters = function(inputParams, callback) {
     ], callback);
 }
 
+/**
+ * Main function
+ */
 var main = function (){
   async.waterfall([
+    /**
+     * Populate and checks conversion params from cli arguments
+     */
     function(paramsCallback) {
       formatParameters(argv, paramsCallback);
     },
+    /**
+     * Check that input is a video and save its duration
+     */
     function(parameters, durationCb) {
       ffmpeg(parameters.input)
       .ffprobe(0, function(err, data) {
@@ -107,6 +123,9 @@ var main = function (){
         }
       });
     },
+    /**
+     * Take screenshots according to parameters
+     */
     function(parameters, screenshotsCb) {
       const timemarks = [];
       if (parameters.duration && parameters.timespan) {
@@ -161,6 +180,9 @@ var main = function (){
         screenshotsCb(packetErrors, parameters, timemarks);
       });
     },
+    /**
+     * Write a basic html file displaying images
+     */
     function(parameters, timemarks, webpageOutput) {
       const htmlBefore = `
 <!DOCTYPE html>
@@ -210,15 +232,17 @@ p{
       });
     },
     /**
-     * Rewriting images path as absolute paths to please phantomjs conversion needs
+     * Rewrite images path as absolute paths to please phantomjs conversion needs
      */
     function(parameters, html, tempHtmlOutput) {
       const tempHtml = html.replace(/(screenshot)/g, path.resolve(__dirname + '/' + parameters.output + '/screenshot'));
-      console.log(tempHtml);
       fs.writeFile(parameters.output + '/temp.html', tempHtml, 'utf8', function(err) {
         tempHtmlOutput(err, parameters);
       })
     },
+    /**
+     * Convert and save a pdf files thanks to phantom js, using temp.html file (with images absolute paths)
+     */
     function(parameters, pdfCallback) {
       console.log('converting to pdf');
       pdf.convert({
@@ -233,10 +257,19 @@ p{
         console.log('saving pdf to ', parameters.output + '/sequence.pdf');
         results.toFile(parameters.output + '/sequence.pdf', function(err){
           console.log('done with pdf conversion');
-          pdfCallback(err);
+          pdfCallback(err, parameters);
         })
       })
+    },
+    /**
+     * Delete temp html file
+     */
+    function(parameters, removeCallback) {
+      fs.unlink(parameters.output + '/temp.html', removeCallback);
     }
+  /**
+   * Final callback
+   */
   ], function (errors) {
     if (errors) {
       console.error('done, with errors : ', errors);
